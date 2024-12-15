@@ -23,18 +23,20 @@ function init(){
 	
 	// initialite lists of divs
 	score_divs = Array(num_players);
-	heading_divs = Array(num_players);
+	stats_divs = Array(num_players);
 	round_score_divs = Array(num_players);
 	average_divs = Array(num_players);
+	darts_divs = Array(num_players);
 	for (let i = 0; i < num_players; i++) {
 		score_divs[i] = document.getElementById("player-score-" + i);
 		score_divs[i].innerHTML = starting_score;
-		heading_divs[i] = document.getElementById("player-heading-" + i);
+		stats_divs[i] = document.getElementById("player-stats-" + i);
 		round_score_divs[i] = document.getElementById("player-round-score-" + i);
 		round_score_divs[i].innerHTML = "-"
 		average_divs[i] = document.getElementById("player-average-" + i);
 		average_divs[i].innerHTML = "&#x2300;-"
-		
+		darts_divs[i] = document.getElementById("player-darts-" + i);
+		darts_divs[i].innerHTML = "&#x21A3;-"
 	}
 	throw_divs = [0,1,2].map((x) => document.getElementById("throw-" + x));
 
@@ -97,18 +99,12 @@ function set_input_multiplier(mul) {
 }
 
 function set_turn(next_turn) {
-	heading_divs[turn].classList.remove('active-turn');
-	score_divs[turn].classList.remove('active-turn');
-	round_score_divs[turn].classList.remove('active-turn');
-	average_divs[turn].classList.remove('active-turn');
+	stats_divs[turn].classList.remove('active-turn');
 	
 	turn = next_turn;
 	darts_thrown = 0;
 	
-	heading_divs[turn].classList.add('active-turn');
-	score_divs[turn].classList.add('active-turn');
-	round_score_divs[turn].classList.add('active-turn');
-	average_divs[turn].classList.add('active-turn');
+	stats_divs[turn].classList.add('active-turn');
 	
 	score_at_beginning_of_round = scores[turn];
 }
@@ -136,6 +132,7 @@ function update_score(points, button_label) {
 	// update running statistics
 	total_darts_thrown[turn]++;
 	cumulative_scores[turn] += points;
+	darts_divs[turn].innerHTML = ("&#x21A3;" + total_darts_thrown[turn])
 	
 	// check if overthrown
 	if (scores[turn] < 0) {
@@ -158,10 +155,7 @@ function update_score(points, button_label) {
 	// end game if remaining score is 0
 	if (scores[turn] == 0) {
 		game_over = true;
-		heading_divs[turn].classList.add('winner');
-		score_divs[turn].classList.add('winner');
-		round_score_divs[turn].classList.add('winner');
-		average_divs[turn].classList.add('winner');
+		stats_divs[turn].classList.add('winner');
 		return;
 	}
 	
