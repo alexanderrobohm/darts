@@ -3,7 +3,7 @@
 	height: 100%;
 	display: grid;
 	grid-template-columns: repeat(30,1fr);
-	grid-template-rows: 5fr 5fr 5fr 5fr repeat(5,4fr);
+	grid-template-rows: 4fr 3fr 3fr 2fr 3fr 5fr repeat(5,4fr);
 }
 
 .page-header {
@@ -31,6 +31,23 @@
 	color: gray;
 }
 
+.player-stats {
+	grid-column: span 15;
+	text-align: center;
+	align-content: center;
+	font-size: 58;
+	background-color: lightgray;
+	color: gray;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: 1fr;
+}
+
+.player-stats-sub {
+	grid-column: span 1;
+	align-content: center;
+}
+
 .active-turn {
 	background-color: red;
 	color: black;
@@ -41,8 +58,13 @@
 	color: black;
 }
 
-.player-score {
-	grid-column: span 15;
+#checkout-guide {
+	grid-column: span 30;
+	font-size: 40;
+	align-content: center;
+	text-align: center;
+	border: solid 2px;
+	margin: 5px;
 }
 
 .throw-box {

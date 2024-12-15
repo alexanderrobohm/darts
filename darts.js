@@ -16,15 +16,25 @@ function init(){
 	
 	// initialize score
 	scores = Array(num_players).fill(starting_score);
-	score_at_beginning_of_round = starting_score;
+	round_scores = Array(num_players).fill(0);
+	cumulative_scores = Array(num_players).fill(0);
+	total_darts_thrown = Array(num_players).fill(0);
+	rounds_played = Array(num_players).fill(0);
 	
 	// initialite lists of divs
 	score_divs = Array(num_players);
 	heading_divs = Array(num_players);
+	round_score_divs = Array(num_players);
+	average_divs = Array(num_players);
 	for (let i = 0; i < num_players; i++) {
 		score_divs[i] = document.getElementById("player-score-" + i);
 		score_divs[i].innerHTML = starting_score;
 		heading_divs[i] = document.getElementById("player-heading-" + i);
+		round_score_divs[i] = document.getElementById("player-round-score-" + i);
+		round_score_divs[i].innerHTML = "-"
+		average_divs[i] = document.getElementById("player-average-" + i);
+		average_divs[i].innerHTML = "&#x2300;-"
+		
 	}
 	throw_divs = [0,1,2].map((x) => document.getElementById("throw-" + x));
 
@@ -44,9 +54,6 @@ function set_input_multiplier(mul) {
 	let number_prefix = "";
 	switch (input_multiplier) {
 		case 1:
-			document.getElementById("score-button-x2").disabled = false;
-			document.getElementById("score-button-x3").disabled = false;
-			document.getElementById("score-button-out").disabled = false;
 			document.getElementById("score-button-undo").disabled = true; // TODO. implement undo
 			document.getElementById("score-button-bull").disabled = false;
 			
@@ -54,13 +61,11 @@ function set_input_multiplier(mul) {
 			document.getElementById("score-button-x3").classList.remove("active-modifier");
 			
 			document.getElementById("score-button-bull").innerHTML = "SB";
+			document.getElementById("score-button-out").innerHTML = "Out";
 			
 			number_prefix = "";
 			break;
 		case 2:
-			document.getElementById("score-button-x2").disabled = false;
-			document.getElementById("score-button-x3").disabled = true;
-			document.getElementById("score-button-out").disabled = true;
 			document.getElementById("score-button-undo").disabled = true;
 			document.getElementById("score-button-bull").disabled = false;
 			
@@ -68,18 +73,18 @@ function set_input_multiplier(mul) {
 			document.getElementById("score-button-x3").classList.remove("active-modifier");
 			
 			document.getElementById("score-button-bull").innerHTML = "DB";
+			document.getElementById("score-button-out").innerHTML = "Timo";
 			
 			number_prefix = "D";
 			break;
 		case 3:
-			document.getElementById("score-button-x2").disabled = true;
-			document.getElementById("score-button-x3").disabled = false;
-			document.getElementById("score-button-out").disabled = true;
 			document.getElementById("score-button-undo").disabled = true;
 			document.getElementById("score-button-bull").disabled = true;
 			
 			document.getElementById("score-button-x2").classList.remove("active-modifier");
 			document.getElementById("score-button-x3").classList.add("active-modifier");
+			
+			document.getElementById("score-button-out").innerHTML = "Louis";
 			
 			number_prefix = "T";
 			break;
@@ -94,12 +99,16 @@ function set_input_multiplier(mul) {
 function set_turn(next_turn) {
 	heading_divs[turn].classList.remove('active-turn');
 	score_divs[turn].classList.remove('active-turn');
+	round_score_divs[turn].classList.remove('active-turn');
+	average_divs[turn].classList.remove('active-turn');
 	
 	turn = next_turn;
 	darts_thrown = 0;
 	
 	heading_divs[turn].classList.add('active-turn');
 	score_divs[turn].classList.add('active-turn');
+	round_score_divs[turn].classList.add('active-turn');
+	average_divs[turn].classList.add('active-turn');
 	
 	score_at_beginning_of_round = scores[turn];
 }
@@ -120,21 +129,39 @@ function update_score(points, button_label) {
 	
 	darts_thrown++;
 	
+	// update display of points thrown in this round
+	let score_thrown_this_round = score_at_beginning_of_round - scores[turn];
+	round_score_divs[turn].innerHTML = score_thrown_this_round;
+	
+	// update running statistics
+	total_darts_thrown[turn]++;
+	cumulative_scores[turn] += points;
+	
 	// check if overthrown
 	if (scores[turn] < 0) {
-		// overthrown, reset and fill the remaining throws with "-"
+		// overthrown, reset score, fill the remaining throws (and round score) with "-" and subtract thrown score from running total
 		scores[turn] = score_at_beginning_of_round;
 		score_divs[turn].innerHTML = scores[turn];
 		for (; darts_thrown < 3; darts_thrown++) {
 			throw_divs[darts_thrown].innerHTML = "-";
 		}
+		round_score_divs[turn].innerHTML = "-"
+		cumulative_scores[turn] -= score_thrown_this_round;
 	}
 	
-	// check if done
+	// update average display if end of round
+	if ((scores[turn] == 0) || (darts_thrown == 3)) {
+		rounds_played[turn]++;
+		average_divs[turn].innerHTML = "&#x2300;" + (cumulative_scores[turn] / rounds_played[turn]).toFixed(1);
+	}
+	
+	// end game if remaining score is 0
 	if (scores[turn] == 0) {
 		game_over = true;
 		heading_divs[turn].classList.add('winner');
 		score_divs[turn].classList.add('winner');
+		round_score_divs[turn].classList.add('winner');
+		average_divs[turn].classList.add('winner');
 		return;
 	}
 	
