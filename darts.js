@@ -47,6 +47,9 @@ function init(){
 	// initialize player 1's turn
 	turn = 0;
 	set_turn(0);
+
+	// initialize game history for undo
+	game_history = [];
 		
 	// initialize input to single
 	set_input_multiplier(1);
@@ -60,7 +63,12 @@ function set_input_multiplier(mul) {
 	let number_prefix = "";
 	switch (input_multiplier) {
 		case 1:
-			document.getElementById("score-button-undo").disabled = true; // TODO. implement undo
+			// TODO: handle undoing first throw of game
+			if (game_history.length == 0 || (game_history.length == 1 && darts_thrown == 1)) {
+				document.getElementById("score-button-undo").disabled = true;
+			} else {
+				document.getElementById("score-button-undo").disabled = false;
+			}
 			document.getElementById("score-button-bull").disabled = false;
 			
 			document.getElementById("score-button-x2").classList.remove("active-modifier");
@@ -127,6 +135,23 @@ function update_score(points, button_label) {
 		}); 
 	}
 	
+	// update game history
+	throw_object = {
+			'value': points,
+			'label': button_label
+	};
+	
+	if (darts_thrown == 0) {
+		// first dart of round
+		game_history.push({
+			'player': turn,
+			'darts': [],
+			'beginning_score': score_at_beginning_of_round
+		});
+	}
+	
+	game_history[game_history.length-1].darts.push(throw_object);
+	
 	// subtract thrown points and update throw display
 	scores[turn] -= points;
 	throw_divs[darts_thrown].innerHTML = button_label;
@@ -176,7 +201,56 @@ function update_score(points, button_label) {
 	// if last throw in turn, increment turn and gray out throw display
 	if (darts_thrown == 3) {
 		set_turn((turn + 1) % num_players);
-		throw_divs.forEach((throw_div) => console.log(throw_div.classList.add("throw-last-turn"))); 
+		throw_divs.forEach((throw_div) => throw_div.classList.add("throw-last-turn")); 
+	}
+}
+
+function undo_throw() {
+	// return if game history is empty
+	if (game_history.length == 0) return;
+	
+	// get last item ln list of rounds, removing it from the array
+	history_object = game_history.pop();
+	
+	// reset statistics
+	total_darts_thrown[history_object.player] -= history_object.darts.length;
+	cumulative_scores[history_object.player] -= (history_object.beginning_score - scores[history_object.player]);
+	if (darts_thrown == 0) rounds_played[history_object.player]--;
+	scores[history_object.player] = history_object.beginning_score;
+	
+	// if undoing first dart of round, replay previous history item
+	if (darts_thrown == 1) {
+		// TODO: handle very first throw of the game
+		// TODO: correctly update statistics when undoing first throw of round
+		
+		// get last item ln list of rounds, removing it from the array
+		history_object = game_history.pop();
+	
+		// reset statistics
+		total_darts_thrown[history_object.player] -= history_object.darts.length;
+		cumulative_scores[history_object.player] -= (history_object.beginning_score - scores[history_object.player]);
+		rounds_played[history_object.player]--;
+		scores[history_object.player] = history_object.beginning_score;
+		
+		// replay throws from history object
+		set_turn(history_object.player);
+		for (let i = 0; i < history_object.darts.length; i++) {
+			update_score(history_object.darts[i].value, history_object.darts[i].label);
+		}
+	} else {
+		// replay throws from history object, excluding last dart
+		set_turn(history_object.player);
+		for (let i = 0; i < history_object.darts.length - 1; i++) {
+			update_score(history_object.darts[i].value, history_object.darts[i].label);
+		}
+	}
+	
+	// disable button if no more undo allowed
+	// TODO: handle undoing first throw of game
+	if (game_history.length == 0 || (game_history.length == 1 && darts_thrown == 1)) {
+		document.getElementById("score-button-undo").disabled = true;
+	} else {
+		document.getElementById("score-button-undo").disabled = false;
 	}
 }
 
@@ -187,7 +261,7 @@ function button_click(element, event) {
 	let thrown_score;
 	switch(button_id) {
 		case "score-button-undo":
-			// TODO: implement undo
+			undo_throw();
 			return;
 		case "score-button-x2":
 			if (input_multiplier != 2) {
