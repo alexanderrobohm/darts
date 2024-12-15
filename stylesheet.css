@@ -1,0 +1,70 @@
+.grid-container {
+	width: 100%;
+	height: 100%;
+	display: grid;
+	grid-template-columns: repeat(30,1fr);
+	grid-template-rows: 5fr 5fr 5fr 5fr repeat(5,4fr);
+}
+
+.page-header {
+	grid-column: span 30;
+	text-align: center;
+	align-content: center;
+	font-size: 96;
+}
+
+.player-heading {
+	grid-column: span 15;
+	text-align: center;
+	align-content: center;
+	font-size: 72;
+	background-color: lightgray;
+	color: gray;
+}
+
+.player-score {
+	grid-column: span 15;
+	text-align: center;
+	align-content: center;
+	font-size: 72;
+	background-color: lightgray;
+	color: gray;
+}
+
+.active-turn {
+	background-color: red;
+	color: black;
+}
+
+.winner {
+	background-color: green;
+	color: black;
+}
+
+.player-score {
+	grid-column: span 15;
+}
+
+.throw-box {
+	grid-column: span 10;
+	font-size: 48;
+	align-content: center;
+	text-align: center;
+	border: solid 2px;
+	margin: 5px;
+}
+
+.throw-last-turn {
+	color: gray;
+}
+
+.score-button {
+	grid-column: span 6;
+	font-size: 36;
+	touch-action: none;
+}
+
+.active-modifier {
+	text-decoration: underline;
+	background-color: gray;
+}
