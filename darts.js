@@ -39,6 +39,7 @@ function init(){
 		darts_divs[i].innerHTML = "&#x21A3;-"
 	}
 	throw_divs = [0,1,2].map((x) => document.getElementById("throw-" + x));
+	for (let throw_div of throw_divs) throw_div.innerHTML = "";
 
 	// initialize checkout guide
 	checkouts = get_checkout_list(true);
@@ -63,12 +64,7 @@ function set_input_multiplier(mul) {
 	let number_prefix = "";
 	switch (input_multiplier) {
 		case 1:
-			// TODO: handle undoing first throw of game
-			if (game_history.length == 0 || (game_history.length == 1 && darts_thrown == 1)) {
-				document.getElementById("score-button-undo").disabled = true;
-			} else {
-				document.getElementById("score-button-undo").disabled = false;
-			}
+			document.getElementById("score-button-undo").disabled = (game_history.length == 0);
 			document.getElementById("score-button-bull").disabled = false;
 			
 			document.getElementById("score-button-x2").classList.remove("active-modifier");
@@ -206,8 +202,23 @@ function update_score(points, button_label) {
 }
 
 function undo_throw() {
+	/*
+		We undo the last dart by resetting to the beginning of a round and then replaing the darts that were thrown, except for the last.
+		If we are undoing the first dart of a round, this means resetting to the beginning of the previous round and replaying all 3 darts.
+		Otherwise, we reset to the beginning of the current round and replay all but the last dart.
+		The very first dart of the game requires special handling - we just reset the whole game.
+		This is ugly, but works.
+		The statistics displayed on screen won't immediately be updated, but will be correct after the player has played another round.
+	*/
+	
 	// return if game history is empty
 	if (game_history.length == 0) return;
+	
+	// restart game if game was over
+	if (game_over) {
+		game_over = false;
+		document.getElementsByClassName("winner")[0].classList.remove("winner");
+	}
 	
 	// get last item ln list of rounds, removing it from the array
 	history_object = game_history.pop();
@@ -220,22 +231,25 @@ function undo_throw() {
 	
 	// if undoing first dart of round, replay previous history item
 	if (darts_thrown == 1) {
-		// TODO: handle very first throw of the game
-		// TODO: correctly update statistics when undoing first throw of round
+		if (game_history.length == 0) {
+			// undoing very first dart
+			// haesslich
+			init();
+		} else {
+			// get last item ln list of rounds, removing it from the array
+			history_object = game_history.pop();
 		
-		// get last item ln list of rounds, removing it from the array
-		history_object = game_history.pop();
-	
-		// reset statistics
-		total_darts_thrown[history_object.player] -= history_object.darts.length;
-		cumulative_scores[history_object.player] -= (history_object.beginning_score - scores[history_object.player]);
-		rounds_played[history_object.player]--;
-		scores[history_object.player] = history_object.beginning_score;
-		
-		// replay throws from history object
-		set_turn(history_object.player);
-		for (let i = 0; i < history_object.darts.length; i++) {
-			update_score(history_object.darts[i].value, history_object.darts[i].label);
+			// reset statistics
+			total_darts_thrown[history_object.player] -= history_object.darts.length;
+			cumulative_scores[history_object.player] -= (history_object.beginning_score - scores[history_object.player]);
+			rounds_played[history_object.player]--;
+			scores[history_object.player] = history_object.beginning_score;
+			
+			// replay throws from history object
+			set_turn(history_object.player);
+			for (let i = 0; i < history_object.darts.length; i++) {
+				update_score(history_object.darts[i].value, history_object.darts[i].label);
+			}
 		}
 	} else {
 		// replay throws from history object, excluding last dart
@@ -244,21 +258,15 @@ function undo_throw() {
 			update_score(history_object.darts[i].value, history_object.darts[i].label);
 		}
 	}
-	
-	// disable button if no more undo allowed
-	// TODO: handle undoing first throw of game
-	if (game_history.length == 0 || (game_history.length == 1 && darts_thrown == 1)) {
-		document.getElementById("score-button-undo").disabled = true;
-	} else {
-		document.getElementById("score-button-undo").disabled = false;
-	}
 }
 
 function button_click(element, event) {
-	if (game_over) return;
-	
 	let button_id = event.target.id;
+	
+	if (game_over && (button_id) != "score-button-undo") return;
+	
 	let thrown_score;
+	
 	switch(button_id) {
 		case "score-button-undo":
 			undo_throw();
