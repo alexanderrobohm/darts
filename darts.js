@@ -11,7 +11,7 @@ function init(){
 		return confirmationMessage; //Gecko + Webkit, Safari, Chrome etc.
 	});
 	
-	num_players = 2
+	num_players = 5
 	starting_score = 501
 	
 	// initialize score
@@ -40,6 +40,7 @@ function init(){
 	}
 	throw_divs = [0,1,2].map((x) => document.getElementById("throw-" + x));
 	for (let throw_div of throw_divs) throw_div.innerHTML = "";
+	player_stats_container = document.getElementById("player-stats-container");
 
 	// initialize checkout guide
 	checkouts = get_checkout_list(true);
@@ -120,6 +121,8 @@ function set_turn(next_turn) {
 	checkout = checkouts[scores[turn]];
 	if (checkout === undefined || (checkout.split(' ') > (3 - darts_thrown))) checkout = "";
 	checkout_div.innerHTML = checkout;
+	
+	scroll_to_player(turn);
 }
 
 function update_score(points, button_label) {
@@ -297,6 +300,28 @@ function button_click(element, event) {
 	}
 	update_score(thrown_score * input_multiplier, event.target.textContent);
 	set_input_multiplier(1);
+}
+
+function scroll_to_player(player_to_show) {
+	// don't scroll if only (or 1) two players
+	if (num_players < 3) return;
+	
+	// calculate width of stat div to know how far to scroll
+	let player_stats_width = player_stats_container.scrollLeftMax / (num_players - 2);
+	
+	let scroll_offset = player_to_show / (num_players - 1);
+	
+	/*
+		example for 5 players:
+	
+		0 -> 0 - 0/4 (left aligned)
+		1 -> 1 - 1/4
+		2 -> 2 - 2/4
+		3 -> 3 - 3/4
+		4 -> 4 - 4/4 (right aligned)
+	*/
+	
+	player_stats_container.scrollLeft = (player_to_show - scroll_offset) * player_stats_width;
 }
 
 function get_checkout_list(double_out) {
