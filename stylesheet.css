@@ -3,7 +3,7 @@
 	height: 100%;
 	display: grid;
 	grid-template-columns: repeat(6,minmax(40px,1fr));
-	grid-template-rows: 4fr 8fr minmax(80px,3fr) minmax(80px,5fr) 20fr;
+	grid-template-rows: 4fr minmax(380px,8fr) minmax(80px,3fr) minmax(80px,5fr) 20fr;
 	overflow: hidden;
 }
 
