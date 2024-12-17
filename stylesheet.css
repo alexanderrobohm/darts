@@ -26,7 +26,7 @@
 }
 
 #player-stats-container::-webkit-scrollbar {
-  display: none;
+	display: none;
 }
 
 .player-stats {
@@ -110,16 +110,40 @@
 @media only screen and (min-aspect-ratio: 8/5) {
 	.grid-container {
 		grid-template-columns: 3fr 1fr 1fr 1fr;
-		grid-template-rows: repeat(6,1fr);
+		grid-template-rows: minmax(45px,1fr) minmax(45px,1fr) 4fr;
 	}
   
 	.page-header {
-		display: none;
+		grid-column: 1;
+		grid-row: 1;
 	}
 	
-	.player-stats {
+	#player-stats-container {
+		display: revert;
 		grid-column: 1;
-		grid-row: span 3
+		grid-row: 2 / span 2;
+		float: top;
+		width: 100%;
+	}
+
+	.player-stats {
+		float: top;
+		width: 100%;
+		height: calc(100% / 3);
+		min-height: 80px;
+		display: grid;
+		grid-template-columns: 1fr 1fr 1fr;
+		grid-template-rows: 1fr 1fr;
+	}
+	
+	.player-heading {
+		grid-row: 1;
+		grid-column: 1 / span 2;
+	}
+	
+	.player-score {
+		grid-row: 1;
+		grid-column: 3;
 	}
 	
 	#checkout-guide {
@@ -142,21 +166,26 @@
 	
 	#score-button-container {
 		grid-column: 2 / span 3;
-		grid-row: 3 / span 4;
+		grid-row: 3;
+		margin-left: 5px;
 	}
 }
 
 @media only screen and (max-height: 600px) {
+	.page-header {
+		font-size: 36;
+	}
+	
 	.player-stats {
-		font-size: 24;
+		font-size: 32;
 	}
 	
 	.player-heading {
-		font-size: 48;
+		font-size: 36;
 	}
 	
 	.player-score {
-		font-size: 48;
+		font-size: 36;
 	}
 	
 	#checkout-guide {

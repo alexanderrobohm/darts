@@ -195,6 +195,7 @@ function update_score(points, button_label) {
 		game_over = true;
 		stats_divs[turn].classList.add('winner');
 		return;
+		// TODO: allow multi-player game to continue after 1 player is done
 	}
 	
 	// if last throw in turn, increment turn and gray out throw display
@@ -211,8 +212,9 @@ function undo_throw() {
 		Otherwise, we reset to the beginning of the current round and replay all but the last dart.
 		The very first dart of the game requires special handling - we just reset the whole game.
 		This is ugly, but works.
-		The statistics displayed on screen won't immediately be updated, but will be correct after the player has played another round.
 	*/
+	
+	// TODO: correctly update displayed statistics (especially the score)
 	
 	// return if game history is empty
 	if (game_history.length == 0) return;
@@ -303,25 +305,50 @@ function button_click(element, event) {
 }
 
 function scroll_to_player(player_to_show) {
-	// don't scroll if only (or 1) two players
-	if (num_players < 3) return;
+	// scroll horizontally of at least 3 players (only applies in vertical layout)
+	if (num_players >= 3) {
+		
+		// calculate width if stat div to know how far to scroll
+		let scrollLeftMax = player_stats_container.scrollWidth - player_stats_container.clientWidth;
+		let player_stats_width = scrollLeftMax / (num_players - 2);
+		
+		/*
+			We offset the scroll by a fraction of a player_stats_width to give a visual indication of where we are in the turn.
+			Example for 5 players:
+		
+			0 -> 0 - 0/4 (left aligned)
+			1 -> 1 - 1/4
+			2 -> 2 - 2/4
+			3 -> 3 - 3/4
+			4 -> 4 - 4/4 (right aligned)
+		*/
+		
+		let scroll_offset = player_to_show / (num_players - 1);
+		
+		player_stats_container.scrollLeft = (player_to_show - scroll_offset) * player_stats_width;
+	}
 	
-	// calculate width of stat div to know how far to scroll
-	let player_stats_width = player_stats_container.scrollLeftMax / (num_players - 2);
+	// scroll vertically if at least 4 players (only applies in horizontal layout)
+	if (num_players >= 3) {
+		
+		// calculate height of stat div to know how far to scroll
+		let scrollTopMax = player_stats_container.scrollHeight - player_stats_container.clientHeight;
+		let player_stats_height = scrollTopMax / (num_players - 3);
+		
+		/*
+			0 -> 0 - 0/3 (top aligned)
+			1 -> 1 - 1/3
+			2 -> 2 - 2/3
+			3 -> 3 - 3/3 (bottom aligned)
+			4 -> 4 - 3/3 (bottom aligned)
+		*/
+		
+		let scroll_offset = Math.min(1, player_to_show / (num_players - 2));
+		
+		player_stats_container.scrollTop = (player_to_show - scroll_offset) * player_stats_height;
+	}
 	
-	let scroll_offset = player_to_show / (num_players - 1);
 	
-	/*
-		example for 5 players:
-	
-		0 -> 0 - 0/4 (left aligned)
-		1 -> 1 - 1/4
-		2 -> 2 - 2/4
-		3 -> 3 - 3/4
-		4 -> 4 - 4/4 (right aligned)
-	*/
-	
-	player_stats_container.scrollLeft = (player_to_show - scroll_offset) * player_stats_width;
 }
 
 function get_checkout_list(double_out) {
