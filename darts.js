@@ -22,6 +22,7 @@ function init(){
 	rounds_played = Array(num_players).fill(0);
 	
 	// initialite lists of divs
+	// TODO: automatically generate player-stats divs
 	score_divs = Array(num_players);
 	stats_divs = Array(num_players);
 	round_score_divs = Array(num_players);
@@ -154,22 +155,20 @@ function update_score(points, button_label) {
 	// subtract thrown points and update throw display
 	scores[turn] -= points;
 	throw_divs[darts_thrown].innerHTML = button_label;
-	score_divs[turn].innerHTML = scores[turn];
 	
 	darts_thrown++;
 	
-	// update display of points thrown in this round
 	let score_thrown_this_round = score_at_beginning_of_round - scores[turn];
-	round_score_divs[turn].innerHTML = score_thrown_this_round;
 	
 	// update running statistics
 	total_darts_thrown[turn]++;
 	cumulative_scores[turn] += points;
-	darts_divs[turn].innerHTML = ("&#x21A3;" + total_darts_thrown[turn])
 	
 	// check if overthrown
+	let overthrown = false;
 	if (scores[turn] < 0) {
 		// overthrown, reset score, fill the remaining throws (and round score) with "-" and subtract thrown score from running total
+		overthrown = true;
 		scores[turn] = score_at_beginning_of_round;
 		score_divs[turn].innerHTML = scores[turn];
 		for (; darts_thrown < 3; darts_thrown++) {
@@ -185,10 +184,14 @@ function update_score(points, button_label) {
 	checkout_div.innerHTML = checkout;
 	
 	// update average display if end of round
+	let do_update_average_display = false;
 	if ((scores[turn] == 0) || (darts_thrown == 3)) {
 		rounds_played[turn]++;
-		average_divs[turn].innerHTML = "&#x2300;" + (cumulative_scores[turn] / rounds_played[turn]).toFixed(1);
+		do_update_average_display = true;
 	}
+	
+	// update score/stats display
+	update_score_display(turn, do_update_average_display, overthrown);
 	
 	// end game if remaining score is 0
 	if (scores[turn] == 0) {
@@ -196,6 +199,7 @@ function update_score(points, button_label) {
 		stats_divs[turn].classList.add('winner');
 		return;
 		// TODO: allow multi-player game to continue after 1 player is done
+		// TODO: correctly handle end of game as a round change uptaing statistics
 	}
 	
 	// if last throw in turn, increment turn and gray out throw display
@@ -210,11 +214,8 @@ function undo_throw() {
 		We undo the last dart by resetting to the beginning of a round and then replaing the darts that were thrown, except for the last.
 		If we are undoing the first dart of a round, this means resetting to the beginning of the previous round and replaying all 3 darts.
 		Otherwise, we reset to the beginning of the current round and replay all but the last dart.
-		The very first dart of the game requires special handling - we just reset the whole game.
-		This is ugly, but works.
+		The very first dart of the game requires special handling.
 	*/
-	
-	// TODO: correctly update displayed statistics (especially the score)
 	
 	// return if game history is empty
 	if (game_history.length == 0) return;
@@ -234,12 +235,24 @@ function undo_throw() {
 	if (darts_thrown == 0) rounds_played[history_object.player]--;
 	scores[history_object.player] = history_object.beginning_score;
 	
+	// check if we undid last dart of previous round
+	let undo_across_rounds = (darts_thrown == 0);
+	let current_player = turn;
+	
 	// if undoing first dart of round, replay previous history item
 	if (darts_thrown == 1) {
 		if (game_history.length == 0) {
-			// undoing very first dart
-			// haesslich
-			init();
+			// undoing very first dart, clear throw display
+			throw_divs.forEach(function(throw_div) {
+				throw_div.classList.remove("throw-last-turn");
+				throw_div.innerHTML = "";
+			});
+			
+			// and reinitialize the first turn
+			set_turn(turn);
+			update_score_display(turn, true, true);
+			
+			return;
 		} else {
 			// get last item ln list of rounds, removing it from the array
 			history_object = game_history.pop();
@@ -249,6 +262,8 @@ function undo_throw() {
 			cumulative_scores[history_object.player] -= (history_object.beginning_score - scores[history_object.player]);
 			rounds_played[history_object.player]--;
 			scores[history_object.player] = history_object.beginning_score;
+			
+			update_score_display(history_object.player, true);
 			
 			// replay throws from history object
 			set_turn(history_object.player);
@@ -263,6 +278,8 @@ function undo_throw() {
 			update_score(history_object.darts[i].value, history_object.darts[i].label);
 		}
 	}
+	
+	update_score_display(current_player, true, undo_across_rounds);
 }
 
 function button_click(element, event) {
@@ -347,8 +364,30 @@ function scroll_to_player(player_to_show) {
 		
 		player_stats_container.scrollTop = (player_to_show - scroll_offset) * player_stats_height;
 	}
+}
+
+function update_score_display(player_to_update, update_average, clear_round_score) {
+	score_divs[player_to_update].innerHTML = scores[player_to_update];
 	
+	if (clear_round_score) {
+		round_score_divs[player_to_update].innerHTML = "-";
+	} else {
+		round_score_divs[player_to_update].innerHTML = score_at_beginning_of_round - scores[player_to_update];
+	}
 	
+	if (total_darts_thrown[player_to_update] != 0) {
+		darts_divs[player_to_update].innerHTML = ("&#x21A3;" + total_darts_thrown[player_to_update]);
+	} else {
+		darts_divs[player_to_update].innerHTML = ("&#x21A3;-");
+	}
+	
+	if (update_average) {
+		if (rounds_played[player_to_update] != 0) {
+			average_divs[turn].innerHTML = "&#x2300;" + (cumulative_scores[player_to_update] / rounds_played[player_to_update]).toFixed(1);
+		} else {
+			average_divs[turn].innerHTML = "&#x2300;-";
+		}
+	}
 }
 
 function get_checkout_list(double_out) {
