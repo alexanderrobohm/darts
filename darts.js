@@ -11,7 +11,7 @@ function init(){
 		return confirmationMessage; //Gecko + Webkit, Safari, Chrome etc.
 	});
 	
-	num_players = 5
+	num_players = 4
 	starting_score = 501
 	
 	// initialize score
@@ -21,27 +21,53 @@ function init(){
 	total_darts_thrown = Array(num_players).fill(0);
 	rounds_played = Array(num_players).fill(0);
 	
-	// initialite lists of divs
-	// TODO: automatically generate player-stats divs
-	score_divs = Array(num_players);
+	// generate divs and initialize lists of divs
+	player_stats_container = document.getElementById("player-stats-container");
 	stats_divs = Array(num_players);
-	round_score_divs = Array(num_players);
+	heading_divs = Array(num_players);
+	score_divs = Array(num_players);
 	average_divs = Array(num_players);
 	darts_divs = Array(num_players);
+	round_score_divs = Array(num_players);
 	for (let i = 0; i < num_players; i++) {
-		score_divs[i] = document.getElementById("player-score-" + i);
-		score_divs[i].innerHTML = starting_score;
-		stats_divs[i] = document.getElementById("player-stats-" + i);
-		round_score_divs[i] = document.getElementById("player-round-score-" + i);
-		round_score_divs[i].innerHTML = "-"
-		average_divs[i] = document.getElementById("player-average-" + i);
-		average_divs[i].innerHTML = "&#x2300;-"
-		darts_divs[i] = document.getElementById("player-darts-" + i);
-		darts_divs[i].innerHTML = "&#x21A3;-"
+		// stats
+		stats_divs[i] = document.createElement("div");
+		stats_divs[i].id = "player-stats-" + i;
+		stats_divs[i].classList.add("player-stats");
+		// heading
+		heading_divs[i] = document.createElement("div");
+		heading_divs[i].id = "player-heading-" + i;
+		heading_divs[i].classList.add("player-heading");
+		heading_divs[i].innerText = "Player " + (i+1);
+		// score
+		score_divs[i] = document.createElement("div");
+		score_divs[i].id = "player-score-" + i;
+		score_divs[i].classList.add("player-score");
+		// average
+		average_divs[i] = document.createElement("div");
+		average_divs[i].id = "player-average-" + i;
+		average_divs[i].classList.add("player-average");
+		// darts
+		darts_divs[i] = document.createElement("div");
+		darts_divs[i].id = "player-darts-" + i;
+		darts_divs[i].classList.add("player-darts");
+		// round score
+		round_score_divs[i] = document.createElement("div");
+		round_score_divs[i].id = "player-round-score-" + i;
+		round_score_divs[i].classList.add("player-round-score");
+		
+		// append to document
+		stats_divs[i].appendChild(heading_divs[i]);
+		stats_divs[i].appendChild(score_divs[i]);
+		stats_divs[i].appendChild(average_divs[i]);
+		stats_divs[i].appendChild(darts_divs[i]);
+		stats_divs[i].appendChild(round_score_divs[i]);
+		player_stats_container.appendChild(stats_divs[i]);
+		
+		update_score_display(i, true, true);
 	}
 	throw_divs = [0,1,2].map((x) => document.getElementById("throw-" + x));
 	for (let throw_div of throw_divs) throw_div.innerHTML = "";
-	player_stats_container = document.getElementById("player-stats-container");
 
 	// initialize checkout guide
 	checkouts = get_checkout_list(true);
@@ -383,9 +409,9 @@ function update_score_display(player_to_update, update_average, clear_round_scor
 	
 	if (update_average) {
 		if (rounds_played[player_to_update] != 0) {
-			average_divs[turn].innerHTML = "&#x2300;" + (cumulative_scores[player_to_update] / rounds_played[player_to_update]).toFixed(1);
+			average_divs[player_to_update].innerHTML = "&#x2300;" + (cumulative_scores[player_to_update] / rounds_played[player_to_update]).toFixed(1);
 		} else {
-			average_divs[turn].innerHTML = "&#x2300;-";
+			average_divs[player_to_update].innerHTML = "&#x2300;-";
 		}
 	}
 }
