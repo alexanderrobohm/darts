@@ -11,8 +11,12 @@ function init(){
 		return confirmationMessage; //Gecko + Webkit, Safari, Chrome etc.
 	});
 	
+	// TODO: get game parameters from URL query parameter
 	num_players = 4
 	starting_score = 501
+	
+	// initialize list of winners
+	winners = [];
 	
 	// initialize score
 	scores = Array(num_players).fill(starting_score);
@@ -64,6 +68,7 @@ function init(){
 		stats_divs[i].appendChild(round_score_divs[i]);
 		player_stats_container.appendChild(stats_divs[i]);
 		
+		// update content
 		update_score_display(i, true, true);
 	}
 	throw_divs = [0,1,2].map((x) => document.getElementById("throw-" + x));
@@ -219,20 +224,33 @@ function update_score(points, button_label) {
 	// update score/stats display
 	update_score_display(turn, do_update_average_display, overthrown);
 	
-	// end game if remaining score is 0
+	// player wins of remaining score is 0
+	let player_won = false;
 	if (scores[turn] == 0) {
-		game_over = true;
-		stats_divs[turn].classList.add('winner');
-		return;
-		// TODO: allow multi-player game to continue after 1 player is done
-		// TODO: correctly handle end of game as a round change uptaing statistics
+		winners.push(turn);
+		player_won = true;
+		update_score_display(turn, true, false);
+		
+		// end game if only 1 player remains
+		if (winners.length >= num_players-1) {
+			game_over = true;
+			return;	
+		}
 	}
 	
-	// if last throw in turn, increment turn and gray out throw display
-	if (darts_thrown == 3) {
-		set_turn((turn + 1) % num_players);
+	// if last throw in turn, increment turn to next non-finished player
+	if (darts_thrown == 3 || player_won) {
+		set_turn(get_next_turn(turn));
+
+		// gray out throw display
 		throw_divs.forEach((throw_div) => throw_div.classList.add("throw-last-turn")); 
 	}
+}
+
+function get_next_turn(current_turn) {
+	let next_turn = (current_turn + 1) % num_players;
+	while (winners.indexOf(next_turn) != -1) next_turn = (next_turn + 1) % num_players;
+	return next_turn;
 }
 
 function undo_throw() {
@@ -247,6 +265,7 @@ function undo_throw() {
 	if (game_history.length == 0) return;
 	
 	// restart game if game was over
+	// TODO: corrently handle new multi-player logic
 	if (game_over) {
 		game_over = false;
 		document.getElementsByClassName("winner")[0].classList.remove("winner");
@@ -393,8 +412,6 @@ function scroll_to_player(player_to_show) {
 }
 
 function update_score_display(player_to_update, update_average, clear_round_score) {
-	score_divs[player_to_update].innerHTML = scores[player_to_update];
-	
 	if (clear_round_score) {
 		round_score_divs[player_to_update].innerHTML = "-";
 	} else {
@@ -413,6 +430,16 @@ function update_score_display(player_to_update, update_average, clear_round_scor
 		} else {
 			average_divs[player_to_update].innerHTML = "&#x2300;-";
 		}
+	}
+	
+	// display player's place if done, score otherwise
+	let place = winners.indexOf(player_to_update) + 1;
+	if (place > 0) {
+		stats_divs[player_to_update].classList.add("winner");
+		score_divs[player_to_update].innerText = "#" + place;
+	} else {
+		stats_divs[player_to_update].classList.remove("winner");
+		score_divs[player_to_update].innerHTML = scores[player_to_update];
 	}
 }
 
