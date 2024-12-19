@@ -267,7 +267,7 @@ function undo_throw() {
 	// restart game if game was over
 	if (game_over) {
 		game_over = false;
-		winners.pop();
+		rounds_played[winners.pop()]--;
 	}
 	
 	// get last item ln list of rounds, removing it from the array
