@@ -12,8 +12,8 @@ function init(){
 	});
 	
 	// TODO: get game parameters from URL query parameter
-	num_players = 4
-	starting_score = 501
+	num_players = 4;
+	starting_score = 501;
 	
 	// initialize list of winners
 	winners = [];
@@ -265,10 +265,9 @@ function undo_throw() {
 	if (game_history.length == 0) return;
 	
 	// restart game if game was over
-	// TODO: corrently handle new multi-player logic
 	if (game_over) {
 		game_over = false;
-		document.getElementsByClassName("winner")[0].classList.remove("winner");
+		winners.pop();
 	}
 	
 	// get last item ln list of rounds, removing it from the array
@@ -279,6 +278,7 @@ function undo_throw() {
 	cumulative_scores[history_object.player] -= (history_object.beginning_score - scores[history_object.player]);
 	if (darts_thrown == 0) rounds_played[history_object.player]--;
 	scores[history_object.player] = history_object.beginning_score;
+	if (winners.indexOf(history_object.player) != -1) winners.pop();
 	
 	// check if we undid last dart of previous round
 	let undo_across_rounds = (darts_thrown == 0);
@@ -307,6 +307,7 @@ function undo_throw() {
 			cumulative_scores[history_object.player] -= (history_object.beginning_score - scores[history_object.player]);
 			rounds_played[history_object.player]--;
 			scores[history_object.player] = history_object.beginning_score;
+			if (winners.indexOf(history_object.player) != -1) winners.pop();
 			
 			update_score_display(history_object.player, true);
 			
