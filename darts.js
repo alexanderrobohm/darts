@@ -12,7 +12,7 @@ function init(){
 	});
 	
 	// TODO: get game parameters from URL query parameter
-	num_players = 4;
+	num_players = 2;
 	starting_score = 501;
 	
 	// initialize list of winners
