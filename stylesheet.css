@@ -128,13 +128,14 @@
 #settings {
 	width: 90%;
 	height: 90%;
+	min-height: 270px;
 	position: absolute;
 	top: 5%;
 	left: 5%;
 	z-index: 2;
 	background-color: white;
 	display: none;
-	grid-template-rows: 1fr repeat(6, 1fr) 1fr;
+	grid-template-rows: repeat(8, minmax(35px,1fr));
 	grid-template-columns: repeat(6, 1fr);
 }
 
@@ -165,7 +166,6 @@
 	margin: 10px;
 	font-size: 72;
 	background-color: lightgreen;
-	touch-action: none;
 }
 
 #settings-button-cancel {
@@ -203,7 +203,6 @@
 	
 	#open-settings-button {
 		grid-column: 3;
-		margin: 5px;
 	}
 	
 	#player-stats-container {
@@ -259,13 +258,15 @@
 	}
 }
 
-@media only screen and (max-height: 600px) {
+@media only screen and (max-height: 800px),
+       only screen and (max-width: 650px) {
 	#page-header {
 		font-size: 36;
 	}
 	
 	#open-settings-button {
 		font-size: 36;
+		margin: 0px;
 	}
 	
 	.player-stats {
@@ -290,6 +291,44 @@
 	
 	.score-button {
 		font-size: 24;
+	}
+	
+	#settings {
+		padding: 10px;
+	}
+	
+	#settings-header {
+		font-size: 36;
+	}
+	
+	.settings-legend {
+		font-size: 32;
+	}
+	
+	.settings-button {
+		font-size: 24;
+		margin: 0px;
+	}
+	
+	.player-number-button {
+		font-size: 24;
+		margin: 0px;
+	}
+	
+	#player-number {
+		font-size: 24
+	}
+	
+	#settings-button-ok {
+		font-size: 24;
+		margin: 0px;
+		margin: 5px 0px 0px 0px;
+	}
+	
+	#settings-button-cancel {
+		font-size: 24;
+		margin: 0px;
+		margin: 5px 0px 0px 0px;
 	}
 }
 
