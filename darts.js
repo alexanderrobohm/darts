@@ -11,10 +11,14 @@ function init(){
 		return confirmationMessage; //Gecko + Webkit, Safari, Chrome etc.
 	});
 	
-	// TODO: get game parameters from URL query parameter
-	num_players = 2;
-	starting_score = 501;
-	double_out = true;
+	// get game parameters
+	const params = new URLSearchParams(document.location.search);
+	num_players = parseInt(params.get("n")) || 2;
+	starting_score = parseInt(params.get("s")) || 501;
+	double_out = params.get("d") == "y";
+	
+	if (num_players < 1) num_players = 2;
+	if (starting_score < 1) starting_score = 2;
 	
 	// initialize list of winners
 	winners = [];
