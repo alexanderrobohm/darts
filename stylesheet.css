@@ -203,6 +203,7 @@
 	
 	#open-settings-button {
 		grid-column: 3;
+		margin: 0px 0px 5px 0px;
 	}
 	
 	#player-stats-container {
@@ -266,7 +267,7 @@
 	
 	#open-settings-button {
 		font-size: 36;
-		margin: 0px;
+		margin: 0px 0px 5px 0px;
 	}
 	
 	.player-stats {
