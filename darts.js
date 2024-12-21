@@ -449,6 +449,19 @@ function update_score_display(player_to_update, update_average, clear_round_scor
 	}
 }
 
+function set_settings_display(display_settings) {
+	let settings_overlay_div = document.getElementById("settings-overlay");
+	let settings_div = document.getElementById("settings");
+	
+	if (display_settings) {
+		settings_overlay_div.style.display = "revert";
+		settings_div.style.display = "grid";
+	} else {
+		settings_overlay_div.style.display = "none";
+		settings_div.style.display = "none";
+	}
+}
+
 function get_checkout_list(double_out) {
 	// TODO: checkout giude for single out
 	if (true) {

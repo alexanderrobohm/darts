@@ -6,7 +6,8 @@
 	</head>
 	<body onload="init()">
 		<div class="grid-container">
-			<div class="page-header">DARTS</div>
+			<div id="page-header">DARTS</div>
+			<button id="open-settings-button" onclick="set_settings_display(true)">...</button>
 			<div id="player-stats-container"></div>
 			<div id="checkout-guide"></div>
 			<div class="throw-box" id="throw-0"></div>
@@ -39,6 +40,22 @@
 				<button type="button" class="score-button" id="score-button-out"  onclick="button_click(this, event)">Out</button>
 				<button type="button" class="score-button" id="score-button-undo" onclick="button_click(this, event)">Undo</button>
 			</div>
+		</div>
+		<div id="settings-overlay"></div>
+		<div id="settings">
+			<div id="settings-header">Settings</div>
+			<div class="settings-legend">Starting Points</div>
+			<button type="button" class="settings-button" id="settings-button-301">301</button>
+			<button type="button" class="settings-button" id="settings-button-501">501</button>
+			<div class="settings-legend">Double Out</div>
+			<button type="button" class="settings-button" id="settings-button-do">Yes</button>
+			<button type="button" class="settings-button" id="settings-button-so">No</button>
+			<div class="settings-legend">Number of Players</div>
+			<button type="button" class="player-number-button" id="sub-player">-</button>
+			<div id="player-number">2</div>
+			<button type="button" class="player-number-button" id="add-player">+</button>
+			<button type="button" id="settings-button-ok">OK</button>
+			<button type="button" id="settings-button-cancel" onclick="set_settings_display(false)">Cancel</button>
 		</div>
 	</body>
 </html>
