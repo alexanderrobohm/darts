@@ -92,6 +92,12 @@ function init(){
 		
 	// initialize input to single
 	set_input_multiplier(1);
+	
+	// initialize settings
+	selected_starting_score = starting_score;
+	selected_double_out = double_out;
+	selected_num_players = num_players;
+	set_settings_display(false);
 }
 
 function set_input_multiplier(mul) {
@@ -449,19 +455,6 @@ function update_score_display(player_to_update, update_average, clear_round_scor
 	}
 }
 
-function set_settings_display(display_settings) {
-	let settings_overlay_div = document.getElementById("settings-overlay");
-	let settings_div = document.getElementById("settings");
-	
-	if (display_settings) {
-		settings_overlay_div.style.display = "revert";
-		settings_div.style.display = "grid";
-	} else {
-		settings_overlay_div.style.display = "none";
-		settings_div.style.display = "none";
-	}
-}
-
 function get_checkout_list(double_out) {
 	// TODO: checkout giude for single out
 	if (true) {
@@ -631,5 +624,83 @@ function get_checkout_list(double_out) {
 		};
 	} else {
 		return {};
+	}
+}
+
+function settings_button_click(element, event) {
+	let button_id = event.target.id;
+	
+	let addsub_player = 0;
+	switch(button_id) {
+		case "settings-button-301":
+			selected_starting_score = 301;
+			break;
+		case "settings-button-501":
+			selected_starting_score = 501;
+			break;
+		case "settings-button-so":
+			selected_double_out = false;
+			break;
+		case "settings-button-do":
+			selected_double_out = true;
+			break;
+		case "add-player":
+			addsub_player = 1;
+			break;
+		case "sub-player":
+			addsub_player = -1;
+			break;
+		case "settings-button-cancel":
+			set_settings_display(false);
+			return;
+		case "settings-button-ok":
+			// reload page with correct settings
+			let query_string = "?s=" + selected_starting_score + "&d=" + (selected_double_out ? "y" : "n") + "&n=" + selected_num_players;
+			window.location.search = query_string;
+			return;
+	}
+	
+	// change selected number of players, never less than 1
+	selected_num_players = Math.max(1, selected_num_players + addsub_player);
+	
+	set_settings_display(true);
+}
+
+function set_settings_display(display_settings) {
+	let settings_overlay_div = document.getElementById("settings-overlay");
+	let settings_div = document.getElementById("settings");
+	
+	if (display_settings) {
+		// show settings
+		settings_overlay_div.style.display = "revert";
+		settings_div.style.display = "grid";
+		
+		// highlight correct score selector button
+		document.getElementById("settings-button-301").classList.remove("active-modifier");
+		document.getElementById("settings-button-501").classList.remove("active-modifier");
+		switch(selected_starting_score) {
+			case 301:
+				document.getElementById("settings-button-301").classList.add("active-modifier");
+				break;
+			case 501:
+				document.getElementById("settings-button-501").classList.add("active-modifier");
+				break;
+		}
+		
+		// highlight correct double out selector button
+		document.getElementById("settings-button-so").classList.remove("active-modifier");
+		document.getElementById("settings-button-do").classList.remove("active-modifier");
+		if(selected_double_out) {
+			document.getElementById("settings-button-do").classList.add("active-modifier");
+		} else {
+			document.getElementById("settings-button-so").classList.add("active-modifier");
+		}
+		
+		// show selected number of players
+		document.getElementById("player-number").innerText = selected_num_players;
+	} else {
+		// hide settings
+		settings_overlay_div.style.display = "none";
+		settings_div.style.display = "none";
 	}
 }

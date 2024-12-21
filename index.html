@@ -45,17 +45,17 @@
 		<div id="settings">
 			<div id="settings-header">Settings</div>
 			<div class="settings-legend">Starting Points</div>
-			<button type="button" class="settings-button" id="settings-button-301">301</button>
-			<button type="button" class="settings-button" id="settings-button-501">501</button>
+			<button type="button" class="settings-button" id="settings-button-301" onclick="settings_button_click(this, event)">301</button>
+			<button type="button" class="settings-button" id="settings-button-501" onclick="settings_button_click(this, event)">501</button>
 			<div class="settings-legend">Double Out</div>
-			<button type="button" class="settings-button" id="settings-button-do">Yes</button>
-			<button type="button" class="settings-button" id="settings-button-so">No</button>
+			<button type="button" class="settings-button" id="settings-button-do" onclick="settings_button_click(this, event)">Yes</button>
+			<button type="button" class="settings-button" id="settings-button-so" onclick="settings_button_click(this, event)">No</button>
 			<div class="settings-legend">Number of Players</div>
-			<button type="button" class="player-number-button" id="sub-player">-</button>
+			<button type="button" class="player-number-button" id="sub-player" onclick="settings_button_click(this, event)">-</button>
 			<div id="player-number">2</div>
-			<button type="button" class="player-number-button" id="add-player">+</button>
-			<button type="button" id="settings-button-ok">OK</button>
-			<button type="button" id="settings-button-cancel" onclick="set_settings_display(false)">Cancel</button>
+			<button type="button" class="player-number-button" id="add-player" onclick="settings_button_click(this, event)">+</button>
+			<button type="button" id="settings-button-ok" onclick="settings_button_click(this, event)">OK</button>
+			<button type="button" id="settings-button-cancel" onclick="settings_button_click(this, event)">Cancel</button>
 		</div>
 	</body>
 </html>
