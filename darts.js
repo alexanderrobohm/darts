@@ -14,6 +14,7 @@ function init(){
 	// TODO: get game parameters from URL query parameter
 	num_players = 2;
 	starting_score = 501;
+	double_out = true;
 	
 	// initialize list of winners
 	winners = [];
@@ -75,7 +76,7 @@ function init(){
 	for (let throw_div of throw_divs) throw_div.innerHTML = "";
 
 	// initialize checkout guide
-	checkouts = get_checkout_list(true);
+	checkouts = get_checkout_list(double_out);
 	checkout_div = document.getElementById("checkout-guide");
 
 	// initialize player 1's turn
@@ -195,11 +196,13 @@ function update_score(points, button_label) {
 	total_darts_thrown[turn]++;
 	cumulative_scores[turn] += points;
 	
+	// was the throw a double?
+	let throw_was_double = /^D(B|\d+)$/.test(button_label);
+	
 	// check if overthrown
-	let overthrown = false;
-	if (scores[turn] < 0) {
-		// overthrown, reset score, fill the remaining throws (and round score) with "-" and subtract thrown score from running total
-		overthrown = true;
+	let overthrown = scores[turn] < 0 || (double_out && scores[turn] == 1) || (double_out && !throw_was_double && scores[turn] == 0);
+	if (overthrown) {
+		// reset score, fill the remaining throws (and round score) with "-" and subtract thrown score from running total
 		scores[turn] = score_at_beginning_of_round;
 		score_divs[turn].innerHTML = scores[turn];
 		for (; darts_thrown < 3; darts_thrown++) {
@@ -225,21 +228,19 @@ function update_score(points, button_label) {
 	update_score_display(turn, do_update_average_display, overthrown);
 	
 	// player wins of remaining score is 0
-	let player_won = false;
-	if (scores[turn] == 0) {
+	let player_won = scores[turn] == 0 && !overthrown;
+	if (player_won) {
 		winners.push(turn);
-		player_won = true;
 		update_score_display(turn, true, false);
 		
 		// end game if only 1 player remains
 		if (winners.length >= num_players-1) {
 			game_over = true;
-			return;	
 		}
 	}
 	
 	// if last throw in turn, increment turn to next non-finished player
-	if (darts_thrown == 3 || player_won) {
+	if (!game_over && (darts_thrown == 3 || player_won)) {
 		set_turn(get_next_turn(turn));
 
 		// gray out throw display
@@ -445,7 +446,8 @@ function update_score_display(player_to_update, update_average, clear_round_scor
 }
 
 function get_checkout_list(double_out) {
-	if (double_out) {
+	// TODO: checkout giude for single out
+	if (true) {
 		return {
 			'170': 'T20 T20 DB',
 			'167': 'T20 T19 DB',
@@ -611,7 +613,6 @@ function get_checkout_list(double_out) {
 			'2': 'D1'
 		};
 	} else {
-		// TODO: checkout guide for single out
 		return {};
 	}
 }
