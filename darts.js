@@ -890,5 +890,10 @@ function set_settings_display(display_settings) {
 		// hide settings
 		settings_overlay_div.style.display = "none";
 		settings_div.style.display = "none";
+		
+		// reset settings to current values
+		selected_starting_score = starting_score;
+		selected_double_out = double_out;
+		selected_num_players = num_players;
 	}
 }
