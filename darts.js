@@ -1,3 +1,20 @@
+/* 
+ * Copyright (C) 2024 Alexander Robohm
+ *
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program. If not, see <https://www.gnu.org/licenses/>. 
+ */
+
 function init(){
 	game_over = false;
 	
@@ -266,10 +283,10 @@ function get_next_turn(current_turn) {
 
 function undo_throw() {
 	/*
-		We undo the last dart by resetting to the beginning of a round and then replaing the darts that were thrown, except for the last.
-		If we are undoing the first dart of a round, this means resetting to the beginning of the previous round and replaying all 3 darts.
-		Otherwise, we reset to the beginning of the current round and replay all but the last dart.
-		The very first dart of the game requires special handling.
+	 * We undo the last dart by resetting to the beginning of a round and then replaing the darts that were thrown, except for the last.
+	 * If we are undoing the first dart of a round, this means resetting to the beginning of the previous round and replaying all 3 darts.
+	 * Otherwise, we reset to the beginning of the current round and replay all but the last dart.
+	 * The very first dart of the game requires special handling.
 	*/
 	
 	// return if game history is empty
@@ -387,14 +404,14 @@ function scroll_to_player(player_to_show) {
 		let player_stats_width = scrollLeftMax / (num_players - 2);
 		
 		/*
-			We offset the scroll by a fraction of a player_stats_width to give a visual indication of where we are in the turn.
-			Example for 5 players:
-		
-			0 -> 0 - 0/4 (left aligned)
-			1 -> 1 - 1/4
-			2 -> 2 - 2/4
-			3 -> 3 - 3/4
-			4 -> 4 - 4/4 (right aligned)
+		 * We offset the scroll by a fraction of a player_stats_width to give a visual indication of where we are in the turn.
+		 * Example for 5 players:
+		 * 
+		 * 0 -> 0 - 0/4 (left aligned)
+		 * 1 -> 1 - 1/4
+		 * 2 -> 2 - 2/4
+		 * 3 -> 3 - 3/4
+		 * 4 -> 4 - 4/4 (right aligned)
 		*/
 		
 		let scroll_offset = player_to_show / (num_players - 1);
@@ -410,11 +427,11 @@ function scroll_to_player(player_to_show) {
 		let player_stats_height = scrollTopMax / (num_players - 3);
 		
 		/*
-			0 -> 0 - 0/3 (top aligned)
-			1 -> 1 - 1/3
-			2 -> 2 - 2/3
-			3 -> 3 - 3/3 (bottom aligned)
-			4 -> 4 - 3/3 (bottom aligned)
+		 * 0 -> 0 - 0/3 (top aligned)
+		 * 1 -> 1 - 1/3
+		 * 2 -> 2 - 2/3
+		 * 3 -> 3 - 3/3 (bottom aligned)
+		 * 4 -> 4 - 3/3 (bottom aligned)
 		*/
 		
 		let scroll_offset = Math.min(1, player_to_show / (num_players - 2));
