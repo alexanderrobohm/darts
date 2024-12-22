@@ -22,18 +22,19 @@
 	grid-template-columns: repeat(6,minmax(40px,1fr));
 	grid-template-rows: 4fr minmax(380px,8fr) minmax(80px,3fr) minmax(80px,5fr) 20fr;
 	overflow: hidden;
+	position: absolute;
 }
 
 #page-header {
 	grid-column: 2 / span 4;
 	text-align: center;
 	align-content: center;
-	font-size: 96;
+	font-size: 96px;
 }
 
 #open-settings-button {
 	margin: 20px;
-	font-size: 64;
+	font-size: 64px;
 	touch-action: none;
 }
 
@@ -59,7 +60,7 @@
 	height: 100%;
 	text-align: center;
 	align-content: center;
-	font-size: 58;
+	font-size: 58px;
 	background-color: lightgray;
 	color: gray;
 	display: grid;
@@ -71,14 +72,14 @@
 	grid-column: span 2;
 	text-align: center;
 	align-content: center;
-	font-size: 72;
+	font-size: 72px;
 }
 
 .player-score {
 	grid-row: span 3;
 	text-align: center;
 	align-content: center;
-	font-size: 72;
+	font-size: 72px;
 }
 
 .active-turn {
@@ -93,7 +94,7 @@
 
 #checkout-guide {
 	grid-column: span 6;
-	font-size: 40;
+	font-size: 40px;
 	align-content: center;
 	text-align: center;
 	border: solid 2px;
@@ -102,7 +103,7 @@
 
 .throw-box {
 	grid-column: span 2;
-	font-size: 48;
+	font-size: 48px;
 	align-content: center;
 	text-align: center;
 	border: solid 2px;
@@ -121,7 +122,7 @@
 }
 
 .score-button {
-	font-size: 36;
+	font-size: 36px;
 	touch-action: none;
 }
 
@@ -161,19 +162,19 @@
 	grid-column: span 6;
 	text-align: center;
 	align-content: center;
-	font-size: 96;
+	font-size: 96px;
 }
 
 .settings-legend {
 	grid-column: span 6;
 	text-align: center;
 	align-content: center;
-	font-size: 72;
+	font-size: 72px;
 }
 
 .settings-button {
 	grid-column: span 3;
-	font-size: 64;
+	font-size: 64px;
 	margin: 10px;
 	touch-action: none;
 }
@@ -181,21 +182,21 @@
 #settings-button-ok {
 	grid-column: 1 / span 3;
 	margin: 10px;
-	font-size: 72;
+	font-size: 72px;
 	background-color: lightgreen;
 }
 
 #settings-button-cancel {
 	grid-column: 4 / span 3;
 	margin: 10px;
-	font-size: 72;
+	font-size: 72px;
 	background-color: lightpink;
 	touch-action: none;
 }
 
 .player-number-button {
 	grid-column: span 2;
-	font-size: 72;
+	font-size: 72px;
 	margin: 10px;
 	touch-action: none;
 }
@@ -204,7 +205,7 @@
 	grid-column: span 2;
 	text-align: center;
 	align-content: center;
-	font-size: 64;
+	font-size: 64px;
 }
 
 @media only screen and (min-aspect-ratio: 8/5) {
@@ -279,36 +280,36 @@
 @media only screen and (max-height: 800px),
        only screen and (max-width: 650px) {
 	#page-header {
-		font-size: 36;
+		font-size: 36px;
 	}
 	
 	#open-settings-button {
-		font-size: 36;
+		font-size: 36px;
 		margin: 0px 0px 5px 0px;
 	}
 	
 	.player-stats {
-		font-size: 32;
+		font-size: 32px;
 	}
 	
 	.player-heading {
-		font-size: 36;
+		font-size: 36px;
 	}
 	
 	.player-score {
-		font-size: 36;
+		font-size: 36px;
 	}
 	
 	#checkout-guide {
-		font-size: 20;
+		font-size: 20px;
 	}
 	
 	.throw-box {
-		font-size: 24;
+		font-size: 24px;
 	}
 	
 	.score-button {
-		font-size: 24;
+		font-size: 24px;
 	}
 	
 	#settings {
@@ -316,35 +317,35 @@
 	}
 	
 	#settings-header {
-		font-size: 36;
+		font-size: 36px;
 	}
 	
 	.settings-legend {
-		font-size: 32;
+		font-size: 32px;
 	}
 	
 	.settings-button {
-		font-size: 24;
+		font-size: 24px;
 		margin: 0px;
 	}
 	
 	.player-number-button {
-		font-size: 24;
+		font-size: 24px;
 		margin: 0px;
 	}
 	
 	#player-number {
-		font-size: 24
+		font-size: 24px
 	}
 	
 	#settings-button-ok {
-		font-size: 24;
+		font-size: 24px;
 		margin: 0px;
 		margin: 5px 0px 0px 0px;
 	}
 	
 	#settings-button-cancel {
-		font-size: 24;
+		font-size: 24px;
 		margin: 0px;
 		margin: 5px 0px 0px 0px;
 	}
