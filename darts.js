@@ -93,7 +93,7 @@ function init(){
 		update_score_display(i, true);
 	}
 	throw_divs = [0,1,2].map((x) => document.getElementById("throw-" + x));
-	for (let throw_div of throw_divs) throw_div.innerHTML = "";
+	for (let throw_div of throw_divs) throw_div.innerText = "";
 
 	// initialize checkout guide
 	checkouts = get_checkout_list(double_out);
@@ -130,8 +130,8 @@ function set_input_multiplier(mul) {
 			document.getElementById("score-button-x2").classList.remove("active-modifier");
 			document.getElementById("score-button-x3").classList.remove("active-modifier");
 			
-			document.getElementById("score-button-bull").innerHTML = "SB";
-			document.getElementById("score-button-out").innerHTML = "Out";
+			document.getElementById("score-button-bull").innerText = "SB";
+			document.getElementById("score-button-out").innerText = "Out";
 			
 			number_prefix = "";
 			break;
@@ -142,8 +142,8 @@ function set_input_multiplier(mul) {
 			document.getElementById("score-button-x2").classList.add("active-modifier");
 			document.getElementById("score-button-x3").classList.remove("active-modifier");
 			
-			document.getElementById("score-button-bull").innerHTML = "DB";
-			document.getElementById("score-button-out").innerHTML = "Timo";
+			document.getElementById("score-button-bull").innerText = "DB";
+			document.getElementById("score-button-out").innerText = "Timo";
 			
 			number_prefix = "D";
 			break;
@@ -154,7 +154,7 @@ function set_input_multiplier(mul) {
 			document.getElementById("score-button-x2").classList.remove("active-modifier");
 			document.getElementById("score-button-x3").classList.add("active-modifier");
 			
-			document.getElementById("score-button-out").innerHTML = "Louis";
+			document.getElementById("score-button-out").innerText = "Louis";
 			
 			number_prefix = "T";
 			break;
@@ -162,7 +162,7 @@ function set_input_multiplier(mul) {
 	}
 	// set labels of all number buttons
 	for (let i = 1; i <= 20; i++) {
-		document.getElementById("score-button-" + i).innerHTML = (number_prefix + i);
+		document.getElementById("score-button-" + i).innerText = (number_prefix + i);
 	}
 }
 
@@ -189,7 +189,7 @@ function update_score(points, button_label) {
 	if (darts_thrown == 0) {
 		throw_divs.forEach(function(throw_div) {
 			throw_div.classList.remove("throw-last-turn");
-			throw_div.innerHTML = "";
+			throw_div.innerText = "";
 		}); 
 	}
 	
@@ -212,7 +212,7 @@ function update_score(points, button_label) {
 	
 	// subtract thrown points and update throw display
 	scores[turn] -= points;
-	throw_divs[darts_thrown].innerHTML = button_label;
+	throw_divs[darts_thrown].innerText = button_label;
 	
 	darts_thrown++;
 	
@@ -229,17 +229,17 @@ function update_score(points, button_label) {
 	if (overthrown) {
 		// reset score, fill the remaining throws (and round score) with "-" and subtract thrown score from running total
 		scores[turn] = score_at_beginning_of_round;
-		score_divs[turn].innerHTML = scores[turn];
+		score_divs[turn].innerText = scores[turn];
 		for (; darts_thrown < 3; darts_thrown++) {
-			throw_divs[darts_thrown].innerHTML = "-";
+			throw_divs[darts_thrown].innerText = "-";
 		}
-		round_score_divs[turn].innerHTML = "-"
+		round_score_divs[turn].innerText = "-"
 	}
 	
 	// update checkout guide
 	checkout = checkouts[scores[turn]];
 	if (checkout === undefined || (checkout.split(' ').length > (3 - darts_thrown))) checkout = "";
-	checkout_div.innerHTML = checkout;
+	checkout_div.innerText = checkout;
 
 	if ((scores[turn] == 0) || (darts_thrown == 3)) {
 		rounds_played[turn]++;
@@ -311,7 +311,7 @@ function undo_throw() {
 			// undoing very first dart, clear throw display
 			throw_divs.forEach(function(throw_div) {
 				throw_div.classList.remove("throw-last-turn");
-				throw_div.innerHTML = "";
+				throw_div.innerText = "";
 			});
 			
 			// and reinitialize the first turn
@@ -434,22 +434,22 @@ function scroll_to_player(player_to_show) {
 
 function update_score_display(player_to_update, clear_round_score) {
 	if (clear_round_score) {
-		round_score_divs[player_to_update].innerHTML = "-";
+		round_score_divs[player_to_update].innerText = "-";
 	} else {
-		round_score_divs[player_to_update].innerHTML = score_at_beginning_of_round - scores[player_to_update];
+		round_score_divs[player_to_update].innerText = score_at_beginning_of_round - scores[player_to_update];
 	}
 	
 	if (total_darts_thrown[player_to_update] != 0) {
-		darts_divs[player_to_update].innerHTML = ("&#x21A3;" + total_darts_thrown[player_to_update]);
+		darts_divs[player_to_update].innerText = ("\u21A3" + total_darts_thrown[player_to_update]);
 	} else {
-		darts_divs[player_to_update].innerHTML = ("&#x21A3;-");
+		darts_divs[player_to_update].innerText = ("\u21A3-");
 	}
 	
 	// update average
 	if (total_darts_thrown[player_to_update] > 0) {
-		average_divs[player_to_update].innerHTML = "&#x2300;" + (3 * (starting_score - scores[player_to_update]) / total_darts_thrown[player_to_update]).toFixed(1);
+		average_divs[player_to_update].innerText = "\u2300" + (3 * (starting_score - scores[player_to_update]) / total_darts_thrown[player_to_update]).toFixed(1);
 	} else {
-		average_divs[player_to_update].innerHTML = "&#x2300;-";
+		average_divs[player_to_update].innerText = "\u2300-";
 	}
 	
 	// display player's place if done, score otherwise
@@ -459,7 +459,7 @@ function update_score_display(player_to_update, clear_round_score) {
 		score_divs[player_to_update].innerText = "#" + place;
 	} else {
 		stats_divs[player_to_update].classList.remove("winner");
-		score_divs[player_to_update].innerHTML = scores[player_to_update];
+		score_divs[player_to_update].innerText = scores[player_to_update];
 	}
 }
 
