@@ -43,7 +43,6 @@ function init(){
 	// initialize score
 	scores = Array(num_players).fill(starting_score);
 	round_scores = Array(num_players).fill(0);
-	cumulative_scores = Array(num_players).fill(0);
 	total_darts_thrown = Array(num_players).fill(0);
 	rounds_played = Array(num_players).fill(0);
 	
@@ -91,7 +90,7 @@ function init(){
 		player_stats_container.appendChild(stats_divs[i]);
 		
 		// update content
-		update_score_display(i, true, true);
+		update_score_display(i, true);
 	}
 	throw_divs = [0,1,2].map((x) => document.getElementById("throw-" + x));
 	for (let throw_div of throw_divs) throw_div.innerHTML = "";
@@ -180,7 +179,7 @@ function set_turn(next_turn) {
 	// update checkout guide
 	checkout = checkouts[scores[turn]];
 	if (checkout === undefined || (checkout.split(' ').length > (3 - darts_thrown))) checkout = "";
-	checkout_div.innerHTML = checkout;
+	checkout_div.innerText = checkout;
 	
 	scroll_to_player(turn);
 }
@@ -221,7 +220,6 @@ function update_score(points, button_label) {
 	
 	// update running statistics
 	total_darts_thrown[turn]++;
-	cumulative_scores[turn] += points;
 	
 	// was the throw a double?
 	let throw_was_double = /^D(B|\d+)$/.test(button_label);
@@ -236,29 +234,25 @@ function update_score(points, button_label) {
 			throw_divs[darts_thrown].innerHTML = "-";
 		}
 		round_score_divs[turn].innerHTML = "-"
-		cumulative_scores[turn] -= score_thrown_this_round;
 	}
 	
 	// update checkout guide
 	checkout = checkouts[scores[turn]];
 	if (checkout === undefined || (checkout.split(' ').length > (3 - darts_thrown))) checkout = "";
 	checkout_div.innerHTML = checkout;
-	
-	// update average display if end of round
-	let do_update_average_display = false;
+
 	if ((scores[turn] == 0) || (darts_thrown == 3)) {
 		rounds_played[turn]++;
-		do_update_average_display = true;
 	}
-	
+
 	// update score/stats display
-	update_score_display(turn, do_update_average_display, overthrown);
+	update_score_display(turn, overthrown);
 	
 	// player wins of remaining score is 0
 	let player_won = scores[turn] == 0 && !overthrown;
 	if (player_won) {
 		winners.push(turn);
-		update_score_display(turn, true, false);
+		update_score_display(turn, false);
 		
 		// end game if only 1 player remains
 		if (winners.length >= num_players-1) {
@@ -303,7 +297,6 @@ function undo_throw() {
 	
 	// reset statistics
 	total_darts_thrown[history_object.player] -= history_object.darts.length;
-	cumulative_scores[history_object.player] -= (history_object.beginning_score - scores[history_object.player]);
 	if (darts_thrown == 0) rounds_played[history_object.player]--;
 	scores[history_object.player] = history_object.beginning_score;
 	if (winners.indexOf(history_object.player) != -1) winners.pop();
@@ -323,7 +316,7 @@ function undo_throw() {
 			
 			// and reinitialize the first turn
 			set_turn(turn);
-			update_score_display(turn, true, true);
+			update_score_display(turn, true);
 			
 			return;
 		} else {
@@ -332,7 +325,6 @@ function undo_throw() {
 		
 			// reset statistics
 			total_darts_thrown[history_object.player] -= history_object.darts.length;
-			cumulative_scores[history_object.player] -= (history_object.beginning_score - scores[history_object.player]);
 			rounds_played[history_object.player]--;
 			scores[history_object.player] = history_object.beginning_score;
 			if (winners.indexOf(history_object.player) != -1) winners.pop();
@@ -353,7 +345,7 @@ function undo_throw() {
 		}
 	}
 	
-	update_score_display(current_player, true, undo_across_rounds);
+	update_score_display(current_player, undo_across_rounds);
 }
 
 function button_click(element, event) {
@@ -440,7 +432,7 @@ function scroll_to_player(player_to_show) {
 	}
 }
 
-function update_score_display(player_to_update, update_average, clear_round_score) {
+function update_score_display(player_to_update, clear_round_score) {
 	if (clear_round_score) {
 		round_score_divs[player_to_update].innerHTML = "-";
 	} else {
@@ -453,12 +445,11 @@ function update_score_display(player_to_update, update_average, clear_round_scor
 		darts_divs[player_to_update].innerHTML = ("&#x21A3;-");
 	}
 	
-	if (update_average) {
-		if (rounds_played[player_to_update] != 0) {
-			average_divs[player_to_update].innerHTML = "&#x2300;" + (cumulative_scores[player_to_update] / rounds_played[player_to_update]).toFixed(1);
-		} else {
-			average_divs[player_to_update].innerHTML = "&#x2300;-";
-		}
+	// update average
+	if (total_darts_thrown[player_to_update] > 0) {
+		average_divs[player_to_update].innerHTML = "&#x2300;" + (3 * (starting_score - scores[player_to_update]) / total_darts_thrown[player_to_update]).toFixed(1);
+	} else {
+		average_divs[player_to_update].innerHTML = "&#x2300;-";
 	}
 	
 	// display player's place if done, score otherwise
