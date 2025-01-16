@@ -32,7 +32,7 @@ function init(){
 	const params = new URLSearchParams(document.location.search);
 	num_players = parseInt(params.get("n")) || 2;
 	starting_score = parseInt(params.get("s")) || 501;
-	double_out = params.get("d") == "y";
+	double_out = params.get("d") != "n";
 	
 	if (num_players < 1) num_players = 2;
 	if (starting_score < 1) starting_score = 2;
@@ -204,7 +204,8 @@ function update_score(points, button_label) {
 		game_history.push({
 			'player': turn,
 			'darts': [],
-			'beginning_score': score_at_beginning_of_round
+			'beginning_score': score_at_beginning_of_round,
+			'darts_skipped': 0
 		});
 	}
 	
@@ -225,11 +226,14 @@ function update_score(points, button_label) {
 	let throw_was_double = /^D(B|\d+)$/.test(button_label);
 	
 	// check if overthrown
-	let overthrown = scores[turn] < 0 || (double_out && scores[turn] == 1) || (double_out && !throw_was_double && scores[turn] == 0);
+	let overthrown = (scores[turn] < 0) || (double_out && ((scores[turn] == 1) || (double_out && !throw_was_double && (scores[turn] == 0))));
 	if (overthrown) {
+		// bust always counts as three darts for the sake of the statistics
+		total_darts_thrown[turn] += (3 - darts_thrown);
+		game_history[game_history.length-1].darts_skipped = (3 - darts_thrown);
+
 		// reset score, fill the remaining throws (and round score) with "-" and subtract thrown score from running total
 		scores[turn] = score_at_beginning_of_round;
-		score_divs[turn].innerText = scores[turn];
 		for (; darts_thrown < 3; darts_thrown++) {
 			throw_divs[darts_thrown].innerText = "-";
 		}
@@ -296,7 +300,7 @@ function undo_throw() {
 	history_object = game_history.pop();
 	
 	// reset statistics
-	total_darts_thrown[history_object.player] -= history_object.darts.length;
+	total_darts_thrown[history_object.player] -= history_object.darts.length + history_object.darts_skipped;
 	if (darts_thrown == 0) rounds_played[history_object.player]--;
 	scores[history_object.player] = history_object.beginning_score;
 	if (winners.indexOf(history_object.player) != -1) winners.pop();
@@ -324,24 +328,28 @@ function undo_throw() {
 			history_object = game_history.pop();
 		
 			// reset statistics
-			total_darts_thrown[history_object.player] -= history_object.darts.length;
+			total_darts_thrown[history_object.player] -= history_object.darts.length + history_object.darts_skipped;
 			rounds_played[history_object.player]--;
 			scores[history_object.player] = history_object.beginning_score;
 			if (winners.indexOf(history_object.player) != -1) winners.pop();
-			
-			update_score_display(history_object.player, true);
-			
+
 			// replay throws from history object
 			set_turn(history_object.player);
 			for (let i = 0; i < history_object.darts.length; i++) {
 				update_score(history_object.darts[i].value, history_object.darts[i].label);
 			}
+			
+			update_score_display(history_object.player, true);
 		}
 	} else {
 		// replay throws from history object, excluding last dart
 		set_turn(history_object.player);
 		for (let i = 0; i < history_object.darts.length - 1; i++) {
 			update_score(history_object.darts[i].value, history_object.darts[i].label);
+		}
+		// update display even if no darts are replayed
+		if (history_object.darts.length <= 1) {
+			update_score_display(history_object.player, true);
 		}
 	}
 	
